@@ -1,0 +1,9 @@
+services:
+  goldtrack:
+    image: nginx:alpine
+    container_name: goldtrack
+    restart: always
+    volumes:
+      - ./landing/index.html:/usr/share/nginx/html/index.html:ro
+    expose:
+      - "80"

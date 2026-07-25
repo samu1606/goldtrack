@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoldTrack — Gold, Silver & Platinum Prices in WhatsApp</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0d0d; color: #e5e5e5; line-height: 1.6; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .gold { background: linear-gradient(135deg, #b8860b, #ffd700, #daa520); }
+    .dark-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 16px; }
+    
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; }
+    nav .logo { font-size: 1.5rem; font-weight: 800; }
+    nav .logo .g { background: linear-gradient(90deg, #ffd700, #daa520); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    nav a { color: #999; text-decoration: none; margin-left: 30px; font-weight: 500; }
+
+    .hero { text-align: center; padding: 80px 0 60px; }
+    .hero h1 { font-size: 3.2rem; font-weight: 800; margin-bottom: 20px; line-height: 1.15; }
+    .hero h1 span { background: linear-gradient(90deg, #ffd700, #daa520, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 1.25rem; color: #888; max-width: 600px; margin: 0 auto 30px; }
+    .btn { display: inline-block; padding: 14px 32px; border-radius: 12px; font-weight: 700; font-size: 1rem; text-decoration: none; transition: all .2s; cursor: pointer; border: none; }
+    .btn-primary { background: linear-gradient(135deg, #b8860b, #ffd700); color: #0d0d0d; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,215,0,0.3); }
+    .btn-outline { border: 2px solid #333; color: #e5e5e5; margin-left: 15px; }
+    .btn-outline:hover { border-color: #ffd700; color: #ffd700; }
+
+    .demo { max-width: 400px; margin: 40px auto; padding: 30px; text-align: left; }
+    .demo-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: #25d366; font-weight: 700; }
+    .demo-msg { background: #222; border-radius: 12px; padding: 18px; font-size: 0.95rem; }
+    .demo-msg .metal-name { font-size: 1.15rem; font-weight: 700; }
+    .demo-msg .gold-text { color: #ffd700; }
+    .demo-msg .silver-text { color: #c0c0c0; }
+    .demo-msg .plat-text { color: #e5e4e2; }
+
+    .pricing { padding: 60px 0; }
+    .pricing h2 { text-align: center; font-size: 2.2rem; margin-bottom: 50px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+    .card { padding: 35px; position: relative; transition: all .3s; }
+    .card:hover { border-color: #ffd700; transform: translateY(-5px); }
+    .card.popular { border-color: #ffd700; }
+    .card.popular::before { content: 'MOST POPULAR'; position: absolute; top: -12px; right: 20px; background: linear-gradient(135deg, #b8860b, #ffd700); color: #0d0d0d; padding: 4px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+    .card h3 { font-size: 1.5rem; margin-bottom: 10px; }
+    .card .price { font-size: 2.5rem; font-weight: 800; margin: 15px 0; color: #ffd700; }
+    .card .price small { font-size: 1rem; color: #666; font-weight: 400; }
+    .card ul { list-style: none; margin: 25px 0; }
+    .card ul li { padding: 8px 0; border-bottom: 1px solid #222; }
+    .card ul li::before { content: '✅ '; }
+    .card .btn { width: 100%; text-align: center; }
+
+    .features { padding: 60px 0; }
+    .features h2 { text-align: center; font-size: 2.2rem; margin-bottom: 50px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+    .feature { text-align: center; padding: 25px; }
+    .feature .icon { font-size: 2.5rem; margin-bottom: 15px; }
+
+    .cta { padding: 60px 40px; text-align: center; margin: 40px 0; background: linear-gradient(135deg, #1a1a0a 0%, #0d0d0d 100%); border-radius: 20px; }
+    .cta h2 { font-size: 2rem; margin-bottom: 20px; }
+    .cta .trust { margin-top: 30px; color: #555; font-size: 0.85rem; }
+
+    footer { text-align: center; padding: 40px 0; color: #444; font-size: 0.9rem; border-top: 1px solid #1a1a1a; margin-top: 60px; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; }
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <div class="logo"><span class="g">GoldTrack</span></div>
+      <div>
+        <a href="#plans">Plans</a>
+        <a href="#demo">Demo</a>
+        <a href="#cta" class="btn btn-primary" style="padding:8px 20px; font-size:0.85rem;">Get Started</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <h1>Gold, Silver &amp; Platinum<br><span>Straight to Your WhatsApp</span></h1>
+      <p>Daily precious metals prices. No apps. No logins. Just the numbers that matter — delivered to the one app you already use.</p>
+      <a href="#plans" class="btn btn-primary">Start Free</a>
+      <a href="#demo" class="btn btn-outline">See Demo</a>
+    </section>
+
+    <section id="demo">
+      <div class="demo dark-card">
+        <div class="demo-header">🟢 WhatsApp • GoldTrack</div>
+        <div class="demo-msg">
+          <p><strong>🥇 Precious Metals — Jul 25</strong></p>
+          <p class="metal-name"><span class="gold-text">Gold:</span> $4,055/oz</p>
+          <p class="metal-name"><span class="silver-text">Silver:</span> $58/oz</p>
+          <p class="metal-name"><span class="plat-text">Platinum:</span> $1,593/oz</p>
+          <p class="metal-name" style="color:#aaa;">Palladium: $1,246/oz</p>
+          <small style="color:#555;">⚡ GoldTrack • Daily at 8 AM</small>
+        </div>
+      </div>
+    </section>
+
+    <section id="plans" class="pricing">
+      <h2>Choose Your Plan</h2>
+      <div class="cards">
+        <div class="card dark-card">
+          <h3>🥉 Starter</h3>
+          <div class="price">$0<small>/month</small></div>
+          <p style="color:#666;">For casual investors</p>
+          <ul>
+            <li>Gold &amp; Silver prices</li>
+            <li>1 daily update (8 AM)</li>
+            <li>USD pricing</li>
+            <li>WhatsApp delivery</li>
+          </ul>
+          <a href="#" class="btn btn-outline">Start Free</a>
+        </div>
+        <div class="card dark-card popular">
+          <h3>🥇 Investor</h3>
+          <div class="price">$9<small>/month</small></div>
+          <p style="color:#666;">For serious investors</p>
+          <ul>
+            <li>Gold, Silver, Platinum, Palladium</li>
+            <li>Updates every 6 hours</li>
+            <li>±$50 move alerts</li>
+            <li>USD + local currency</li>
+            <li>WhatsApp priority</li>
+          </ul>
+          <a href="#" class="btn btn-primary">Choose Investor</a>
+        </div>
+        <div class="card dark-card">
+          <h3>💎 Trader</h3>
+          <div class="price">$19<small>/month</small></div>
+          <p style="color:#666;">For professional traders</p>
+          <ul>
+            <li>All precious metals</li>
+            <li>Updates every hour</li>
+            <li>Custom price thresholds</li>
+            <li>Historical data + CSV</li>
+            <li>WhatsApp + Email</li>
+          </ul>
+          <a href="#" class="btn btn-outline">Choose Trader</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>Why GoldTrack?</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="icon">📱</div>
+          <h3>Zero Apps</h3>
+          <p>WhatsApp is the only app you need. Works on any phone. No downloads. No passwords.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">⚡</div>
+          <h3>Real-Time Data</h3>
+          <p>Prices sourced from global exchanges. Updated daily with verified spot rates.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🌍</div>
+          <h3>Any Currency</h3>
+          <p>Gold in USD. Or EUR. Or INR. Your currency, your prices. We convert automatically.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🔔</div>
+          <h3>Smart Alerts</h3>
+          <p>Set your threshold. We notify you when gold moves $50+. Never miss a buy or sell signal.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🏦</div>
+          <h3>Institutional Grade</h3>
+          <p>Same data sources used by banks and trading desks. Tokenized for your phone.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🔒</div>
+          <h3>100% Private</h3>
+          <p>No KYC. No broker account. Just prices. Your portfolio stays yours.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="cta" class="cta">
+      <h2>Gold Doesn't Wait.<br>Neither Should You.</h2>
+      <p style="color:#666; margin-bottom:30px;">From jewelers in Mumbai to traders in London — the people who profit from metals check prices daily. Now you can too. Without lifting a finger.</p>
+      <a href="#" class="btn btn-primary" style="font-size:1.1rem; padding:18px 40px;">Start Free →</a>
+      <div class="trust">
+        <p>Free forever plan. No credit card. Cancel anytime.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 GoldTrack · Built for global markets 🌍</p>
+      <p style="margin-top:5px;">Data by fawazahmed0/currency-api · Not financial advice</p>
+    </footer>
+  </div>
+</body>
+</html>

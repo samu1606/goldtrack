@@ -1,0 +1,31 @@
+{
+  "name": "GoldTrack Daily → WhatsApp (v2)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "hours", "hoursInterval": 12 }] }
+      },
+      "id": "schedule",
+      "name": "Cada 12 horas",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const http = this.helpers.httpRequest;\n\nconst url = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json';\nconst data = await http({ method:'GET', url: url });\nconst usd = data.usd;\n\nconst gold = (1 / usd.xau).toFixed(2);\nconst silver = (1 / usd.xag).toFixed(2);\nconst platinum = usd.xpt ? (1 / usd.xpt).toFixed(2) : 'N/A';\nconst palladium = usd.xpd ? (1 / usd.xpd).toFixed(2) : 'N/A';\n\nconst date = new Date().toLocaleDateString('en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric' });\n\nconst text = '🥇 *Precious Metals — ' + date + '*\\n\\n' +\n  '🟡 *Gold:* $' + gold + '/oz\\n' +\n  '⚪ *Silver:* $' + silver + '/oz\\n' +\n  '🔘 *Platinum:* $' + platinum + '/oz\\n' +\n  '⚫ *Palladium:* $' + palladium + '/oz\\n\\n' +\n  '📊 Data: fawazahmed0/currency-api\\n' +\n  '⚡ *GoldTrack*';\n\nawait http({\n  method:'POST',\n  url:'http://148.230.90.171:8096/message/sendText/wasapea-7c7a2c6c',\n  headers:{ 'apikey':'wasapea-evo-key-2026', 'Content-Type':'application/json' },\n  body:{ number:'573106055920', text: text }\n});\n\nreturn { sent: true, gold: gold, silver: silver, platinum: platinum, palladium: palladium };\n"
+      },
+      "id": "fetch-and-send",
+      "name": "Consultar Metales y Enviar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 300]
+    }
+  ],
+  "connections": {
+    "Cada 12 horas": {
+      "main": [[ { "node": "Consultar Metales y Enviar", "type": "main", "index": 0 } ]]
+    }
+  },
+  "settings": { "saveExecutionProgress": true, "callerPolicy": "workflowsFromSameOwner" }
+}
