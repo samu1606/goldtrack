@@ -1,31 +1,55 @@
 {
-  "name": "GoldTrack Daily → WhatsApp (v2)",
+  "name": "GoldTrack → WhatsApp (v3 multi-user)",
   "nodes": [
     {
       "parameters": {
-        "rule": { "interval": [{ "field": "hours", "hoursInterval": 12 }] }
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
       },
       "id": "schedule",
-      "name": "Cada 12 horas",
+      "name": "Daily at 8 AM",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.1,
-      "position": [250, 300]
+      "position": [
+        250,
+        300
+      ]
     },
     {
       "parameters": {
-        "jsCode": "const http = this.helpers.httpRequest;\n\nconst url = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json';\nconst data = await http({ method:'GET', url: url });\nconst usd = data.usd;\n\nconst gold = (1 / usd.xau).toFixed(2);\nconst silver = (1 / usd.xag).toFixed(2);\nconst platinum = usd.xpt ? (1 / usd.xpt).toFixed(2) : 'N/A';\nconst palladium = usd.xpd ? (1 / usd.xpd).toFixed(2) : 'N/A';\n\nconst date = new Date().toLocaleDateString('en-US', { weekday:'short', year:'numeric', month:'short', day:'numeric' });\n\nconst text = '🥇 *Precious Metals — ' + date + '*\\n\\n' +\n  '🟡 *Gold:* $' + gold + '/oz\\n' +\n  '⚪ *Silver:* $' + silver + '/oz\\n' +\n  '🔘 *Platinum:* $' + platinum + '/oz\\n' +\n  '⚫ *Palladium:* $' + palladium + '/oz\\n\\n' +\n  '📊 Data: fawazahmed0/currency-api\\n' +\n  '⚡ *GoldTrack*';\n\nawait http({\n  method:'POST',\n  url:'http://148.230.90.171:8096/message/sendText/wasapea-7c7a2c6c',\n  headers:{ 'apikey':'wasapea-evo-key-2026', 'Content-Type':'application/json' },\n  body:{ number:'573106055920', text: text }\n});\n\nreturn { sent: true, gold: gold, silver: silver, platinum: platinum, palladium: palladium };\n"
+        "jsCode": "const http = this.helpers.httpRequest;\n\n// ⚙️ CONFIG\n\n// 2. Send to all subscribers\nasync function sendMsg(phone, text) {\n  return http({\n    method: 'POST',\n    url: 'http://148.230.90.171:8096/message/sendText/wasapea-7c7a2c6c',\n    headers: { 'apikey': 'wasapea-evo-key-2026', 'Content-Type': 'application/json' },\n    body: { number: phone, text: text }\n  });\n}\n\n\n\n// 📱 SUBSCRIBERS — Add phone numbers (57 + number, no +)\nconst subscribers = [\n  { phone: '573106055920', plan: 'free' },\n  // { phone: '573001234567', plan: 'pro' },\n];\n\n\n// 1. Fetch metals prices from currency-api (free CDN, no key)\nconst url = 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json';\nconst data = await http({ method: 'GET', url: url });\n\nconst xau = data.usd['xau']; // Gold oz\nconst xag = data.usd['xag']; // Silver oz\nconst xpt = data.usd['xpt']; // Platinum oz\nconst xpd = data.usd['xpd']; // Palladium oz\nconst usdPerOz = { xau: xau, xag: xag, xpt: xpt, xpd: xpd };\n\nfor (const [k, v] of Object.entries(usdPerOz)) {\n  if (v) usdPerOz[k] = (1 / v).toFixed(2);\n}\n\nconst date = new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });\n\nconst text = '🥇 *Precious Metals — ' + date + '*\\n\\n' +\n  '🟡 *Gold:* $' + usdPerOz.xau + '/oz\\n' +\n  '⚪ *Silver:* $' + usdPerOz.xag + '/oz\\n' +\n  '🔘 *Platinum:* $' + usdPerOz.xpt + '/oz\\n' +\n  '⚫ *Palladium:* $' + usdPerOz.xpd + '/oz\\n\\n' +\n  '⚡ *GoldTrack*';\n\n\n// 2. Send to all subscribers\nconst results = [];\nfor (const sub of subscribers) {\n  try {\n    await sendMsg(sub.phone, text);\n    results.push({ phone: sub.phone, status: 'sent' });\n  } catch (e) {\n    results.push({ phone: sub.phone, status: 'error', error: e.message });\n  }\n}\n\nreturn { sent: results.filter(r => r.status === 'sent').length, total: subscribers.length, results };"
       },
-      "id": "fetch-and-send",
-      "name": "Consultar Metales y Enviar",
+      "id": "fetch-send",
+      "name": "Fetch & Send to All",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [500, 300]
+      "position": [
+        500,
+        300
+      ]
     }
   ],
   "connections": {
-    "Cada 12 horas": {
-      "main": [[ { "node": "Consultar Metales y Enviar", "type": "main", "index": 0 } ]]
+    "Daily at 8 AM": {
+      "main": [
+        [
+          {
+            "node": "Fetch & Send to All",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "settings": { "saveExecutionProgress": true, "callerPolicy": "workflowsFromSameOwner" }
+  "settings": {
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  }
 }
